@@ -7,7 +7,6 @@ package sg.edu.nus.iss.vmcs.maintenance;
  * than for the purpose for which it has been supplied.
  *
  */
-
 import java.awt.*;
 
 import sg.edu.nus.iss.vmcs.store.*;
@@ -21,7 +20,6 @@ import sg.edu.nus.iss.vmcs.util.*;
  * @version 3.0 5/07/2003
  * @author Olivo Miotto, Pang Ping Li
  */
-
 public class MaintenanceController {
 
     private MainController mCtrl;
@@ -42,8 +40,9 @@ public class MaintenanceController {
      */
     public void displayMaintenancePanel() {
         SimulatorControlPanel scp = mCtrl.getSimulatorControlPanel();
-        if (mpanel == null)
+        if (mpanel == null) {
             mpanel = new MaintenancePanel((Frame) scp, this);
+        }
         mpanel.display();
         mpanel.setActive(MaintenancePanel.DIALOG, true);
         // setActive of password, invalid and valid display.
@@ -151,21 +150,24 @@ public class MaintenanceController {
         boolean ds = machctrl.isDoorClosed();
 
         if (ds == false) {
-            MessageDialog msg =
-                new MessageDialog(
-                    mpanel,
-                    "Please Lock the Door before You Leave");
+            MessageDialog msg
+                    = new MessageDialog(
+                            mpanel,
+                            "Please Lock the Door before You Leave");
             msg.setLocation(500, 500);
             return;
         }
 
+        mpanel.initCollectCash();
+        mpanel.initTotalCash();
         mpanel.setActive(MaintenancePanel.DIALOG, true);
 
     }
 
     public void closeDown() {
-        if (mpanel != null)
+        if (mpanel != null) {
             mpanel.closeDown();
+        }
     }
 
 }
