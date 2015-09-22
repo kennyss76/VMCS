@@ -7,6 +7,7 @@ package sg.edu.nus.iss.vmcs.maintenance;
  * than for the purpose for which it has been supplied.
  *
  */
+
 import java.awt.*;
 
 import sg.edu.nus.iss.vmcs.store.*;
@@ -20,6 +21,7 @@ import sg.edu.nus.iss.vmcs.util.*;
  * @version 3.0 5/07/2003
  * @author Olivo Miotto, Pang Ping Li
  */
+
 public class MaintenanceController {
 
     private MainController mCtrl;
@@ -40,9 +42,8 @@ public class MaintenanceController {
      */
     public void displayMaintenancePanel() {
         SimulatorControlPanel scp = mCtrl.getSimulatorControlPanel();
-        if (mpanel == null) {
+        if (mpanel == null)
             mpanel = new MaintenancePanel((Frame) scp, this);
-        }
         mpanel.display();
         mpanel.setActive(MaintenancePanel.DIALOG, true);
         // setActive of password, invalid and valid display.
@@ -61,6 +62,15 @@ public class MaintenanceController {
             mpanel.setActive(MaintenancePanel.PSWD, false);
             MachineryController machctrl = mCtrl.getMachineryController();
             machctrl.setDoorState(false);
+        }
+    }
+
+    // invoked in CoinDisplayListener
+    public void displayCoin() {
+        try {
+            mpanel.getCoinDisplay().updateDisplay();
+        } catch (VMCSException e) {
+            System.out.println("MaintenanceController.displayCoin:" + e);
         }
     }
 
@@ -105,7 +115,13 @@ public class MaintenanceController {
         StoreController sctrl = mCtrl.getStoreController();
         int tc = sctrl.getTotalCash();
         mpanel.displayTotalCash(tc);
+    }
 
+    // TotalCashButtonListener
+    public void getTotalCoin() {
+        StoreController sctrl = mCtrl.getStoreController();
+        int tcoin = sctrl.getTotalCoin();
+        mpanel.displayTotalCoin(tcoin);
     }
 
     // TransferCashButtonListener
@@ -115,15 +131,19 @@ public class MaintenanceController {
         MachineryController machctrl = mCtrl.getMachineryController();
 
         int cc; // coin quantity;
+        int vl; // cash value;
 
         try {
-
+            this.displayCoin();
+            vl = sctrl.getTotalCash();
             cc = sctrl.transferAll();
             mpanel.displayCoins(cc);
+            mpanel.displayTotalCoin(cc);
+            mpanel.displayTotalCash(vl);
             machctrl.displayCoinStock();
             // the cash qty current is displayed in the Maintenance panel needs to be update to be 0;
             // not required.
-            mpanel.updateCurrentQtyDisplay(Store.CASH, 0);
+            //mpanel.updateCurrentQtyDisplay(Store.CASH, 0);
         } catch (VMCSException e) {
             System.out.println("MaintenanceController.transferAll:" + e);
         }
@@ -150,24 +170,21 @@ public class MaintenanceController {
         boolean ds = machctrl.isDoorClosed();
 
         if (ds == false) {
-            MessageDialog msg
-                    = new MessageDialog(
-                            mpanel,
-                            "Please Lock the Door before You Leave");
+            MessageDialog msg =
+                new MessageDialog(
+                    mpanel,
+                    "Please Lock the Door before You Leave");
             msg.setLocation(500, 500);
             return;
         }
 
-        mpanel.initCollectCash();
-        mpanel.initTotalCash();
         mpanel.setActive(MaintenancePanel.DIALOG, true);
 
     }
 
     public void closeDown() {
-        if (mpanel != null) {
+        if (mpanel != null)
             mpanel.closeDown();
-        }
     }
 
 }
