@@ -195,7 +195,7 @@ public class MaintenancePanel extends Dialog {
     public void setActiveTotalCoin(boolean st) {
         totalCoin.setEnabled(st);
         if (!st) {
-            totalCoin.setText("");
+            totalCoin.setText("                  ");
         }
 	}
 
